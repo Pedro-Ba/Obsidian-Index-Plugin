@@ -1,0 +1,11 @@
+{
+	"id": "Index Plugin",
+	"name": "Index Plugin",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "I'm trying to make this work without using typescript because fuck that noise. All this plugin does is create an index.md that is automatically updated when you create a new file. You can generate starting index.mds for each folder by utilizing the command.",
+	"author": "Obsidian",
+	"authorUrl": "https://obsidian.md",
+	"fundingUrl": "https://obsidian.md/pricing",
+	"isDesktopOnly": false
+}
