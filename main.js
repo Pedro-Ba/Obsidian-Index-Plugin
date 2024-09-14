@@ -24,12 +24,24 @@ class myPlugin extends obsidian.Plugin {
                         //in case index.md file does not exist, then we also assume that it's because we've created this folder recently, and thus index.md file does not exist.
                         //What this means is that we should actually look out and create an index.md file inside a folder when a folder is created, but that's not really relevant to the case right now?
                         //anyway, if you fell here, index.md does not exist for some reason, so we create index.md and then add the file.
-                        // this.app.vault.create(fileFolder + "/index.md", `[[${this.app.workspace.getActiveFile().basename}]]`);
+                        this.app.vault.create(`${fileFolder}/index-${file.parent.name}.md`, `[[${this.app.workspace.getActiveFile().basename}]]`);
                     }
                 })
-                this.app.vault.on("delete", () => {
-                    console.log("You deleted a file.");
-                    //remove the file from the index.md? Kinda lazy to do this rn.
+                this.app.vault.on("delete", async (file) => {
+                    console.log("You deleted a file");
+                    //parent becomes null on deletion, even if file content still remains. Need string treatment to remove name of file from place...
+                    let fileFolder = file.path.replace(`/${file.name}`, "");
+                    let existsIndex = await this.app.vault.adapter.exists(`${fileFolder}/index-${fileFolder}.md`); //trailing slash makes this not currently work. Crazy.
+                    if(existsIndex){
+                        let indexFile = this.app.vault.getFileByPath(`${fileFolder}/index-${fileFolder}.md`);
+                        let text = await this.app.vault.read(indexFile);
+                        let newText = text.replace(`[[${file.basename}]]\n`, "");
+                        this.app.vault.modify(indexFile, newText)
+                    }
+                    else{
+                        console.log("No need to remove as index does not exist."); //realistically you should never fall here unless the plugin is installed into an existing vault, command is never used,
+                        //and then you delete a file in a folder without ever creating one first.
+                    }
                 })
                 //need an extra one for when the file is moved.
             })
